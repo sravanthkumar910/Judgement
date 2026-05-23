@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JurisAI - Legal Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+</head>
+<body class="bg-[#F8FAFC] font-sans antialiased text-slate-800 h-screen flex overflow-hidden">
+
+    <aside class="w-64 flex-shrink-0 bg-[#0F172A] text-slate-400 flex flex-col justify-between h-full border-r border-slate-800">
+        <div>
+            <div class="p-6 border-b border-slate-800/60 flex items-center gap-3">
+                <div class="bg-indigo-600 text-white p-2 rounded-lg flex items-center justify-center shadow-md">
+                    <span class="material-icons-outlined text-xl">balance</span>
+                </div>
+                <div>
+                    <h1 class="text-white font-bold tracking-wide text-lg leading-tight">JurisAI</h1>
+                    <p class="text-xs text-slate-500 font-medium">Legal Intelligence</p>
+                </div>
+            </div>
+
+            <nav class="mt-6 px-4 space-y-1">
+                {% for item in nav_items %}
+                <a href="/?page={{ item.id }}" 
+                   class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-150
+                   {% if current_page == item.id %} bg-slate-800 text-white shadow-sm font-semibold {% else: %} hover:bg-slate-800/40 hover:text-slate-200 {% endif %}">
+                    <span class="material-icons-outlined text-lg opacity-80">{{ item.icon }}</span>
+                    {{ item.label }}
+                </a>
+                {% endfor %}
+            </nav>
+        </div>
+
+        <div class="p-4 border-t border-slate-800/60 space-y-1">
+            <a href="/?page=profile" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all
+               {% if current_page == 'profile' %} bg-slate-800 text-white font-semibold {% else: %} hover:bg-slate-800/40 hover:text-slate-200 {% endif %}">
+                <span class="material-icons-outlined text-lg">account_circle</span>
+                Profile
+            </a>
+            <a href="/?page=settings" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all
+               {% if current_page == 'settings' %} bg-slate-800 text-white font-semibold {% else: %} hover:bg-slate-800/40 hover:text-slate-200 {% endif %}">
+                <span class="material-icons-outlined text-lg">settings</span>
+                Settings
+            </a>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-full overflow-hidden">
+        
+        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 z-10 flex-shrink-0">
+            <div class="w-full max-w-xl relative flex items-center">
+                {% if current_page == 'upload' %}
+                <div class="flex items-center gap-2 text-sm font-semibold text-slate-400">
+                    <span class="hover:text-slate-600 cursor-pointer">Documents</span>
+                    <span class="material-icons-outlined text-xs">chevron_right</span>
+                    <span class="text-slate-800">Upload Case Files</span>
+                </div>
+                {% elif current_page == 'comparison' %}
+                <div class="flex items-center gap-6 text-sm font-semibold">
+                    <span class="text-slate-900 text-base font-bold">Case Comparison</span>
+                    <div class="h-4 w-px bg-slate-200"></div>
+                    <span class="text-slate-800 border-b-2 border-black pb-5 pt-4 cursor-pointer">Analysis View</span>
+                    <span class="text-slate-400 hover:text-slate-600 pb-5 pt-4 cursor-pointer">Citation Map</span>
+                </div>
+                {% elif current_page in ['settings', 'profile'] %}
+                <h2 class="text-lg font-bold text-slate-900 tracking-tight">Settings</h2>
+                {% else %}
+                <span class="material-icons-outlined absolute left-3 text-slate-400 text-xl">search</span>
+                <input type="text" placeholder="Search case law, statutes, or documents..." 
+                       class="w-full pl-11 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-indigo-500 focus:bg-white transition-all text-slate-700 placeholder-slate-400" />
+                {% endif %}
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <div class="flex items-center gap-2 text-xs font-semibold text-slate-600 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
+                    <span class="h-2 w-2 rounded-full bg-emerald-500 block animate-pulse"></span>
+                    System Status
+                </div>
+                <button class="text-slate-500 hover:text-slate-700 relative p-1">
+                    <span class="material-icons-outlined text-xl">notifications</span>
+                </button>
+                <button class="text-slate-500 hover:text-slate-700 p-1">
+                    <span class="material-icons-outlined text-xl">help_outline</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-8 space-y-8">
+            {% if current_page == 'dashboard' %}
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-slate-900 tracking-tight">Welcome back, Counselor</h2>
+                    <p class="text-slate-500 text-sm mt-1.5 font-medium">Here is an overview of your active matters and intelligence briefings for today.</p>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8 items-start">
+                    <div class="xl:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 hover:shadow-md transition-all group cursor-pointer">
+                            <div class="p-3 bg-slate-100 rounded-lg text-slate-700 inline-block mb-4 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-all">
+                                <span class="material-icons-outlined text-2xl">gavel</span>
+                            </div>
+                            <h3 class="font-bold text-slate-900 mb-1">Judicial Search</h3>
+                            <p class="text-slate-500 text-xs leading-relaxed">Exhaustive search across 50 state jurisdictions and federal courts.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 hover:shadow-md transition-all group cursor-pointer">
+                            <div class="p-3 bg-slate-100 rounded-lg text-slate-700 inline-block mb-4 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-all">
+                                <span class="material-icons-outlined text-2xl">insights</span>
+                            </div>
+                            <h3 class="font-bold text-slate-900 mb-1">Case Analytics</h3>
+                            <p class="text-slate-500 text-xs leading-relaxed">Predictive outcomes and judge-specific sentiment mapping.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 hover:shadow-md transition-all group cursor-pointer">
+                            <div class="p-3 bg-slate-100 rounded-lg text-slate-700 inline-block mb-4 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-all">
+                                <span class="material-icons-outlined text-2xl">fingerprint</span>
+                            </div>
+                            <h3 class="font-bold text-slate-900 mb-1">Document Processing</h3>
+                            <p class="text-slate-500 text-xs leading-relaxed">Automated OCR and metadata extraction for discovery files.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 hover:shadow-md transition-all group cursor-pointer">
+                            <div class="p-3 bg-slate-100 rounded-lg text-slate-700 inline-block mb-4 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-all">
+                                <span class="material-icons-outlined text-2xl">auto_awesome</span>
+                            </div>
+                            <h3 class="font-bold text-slate-900 mb-1">AI Draft Assistant</h3>
+                            <p class="text-slate-500 text-xs leading-relaxed">Generate initial motions and briefs based on file context.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#0B132B] text-white p-6 rounded-xl border border-slate-800 flex flex-col justify-between h-full min-h-[340px] shadow-lg relative overflow-hidden">
+                        <div>
+                            <div class="flex items-center gap-2 text-indigo-400 font-semibold uppercase tracking-wider text-[10px] mb-3">
+                                <span class="material-icons-outlined text-sm">lightbulb</span>
+                                Intelligence Insight
+                            </div>
+                            <h3 class="text-lg font-bold leading-snug mb-3 text-slate-100">Recent Rulings on Digital Privacy Protections</h3>
+                            <p class="text-slate-400 text-xs leading-relaxed">The Second Circuit has just updated its stance on encrypted device discovery. This may impact your current arguments in <span class="text-indigo-300 font-semibold underline decoration-indigo-400/50 cursor-pointer">Matter #442-B</span>.</p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-slate-850 flex flex-col gap-4">
+                            <a href="#" class="inline-flex items-center gap-2 text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition-all group">
+                                Read Full Briefing 
+                                <span class="material-icons-outlined text-sm transform group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                            </a>
+                            <div class="w-full h-24 bg-gradient-to-t from-slate-950/80 to-slate-900/40 rounded-lg border border-slate-800/50 flex items-center justify-center">
+                                <span class="material-icons-outlined text-slate-700 text-3xl">gavel</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+                        <h3 class="font-bold text-slate-900 text-lg">Recent Matters</h3>
+                        <div class="flex items-center gap-2">
+                            <button class="px-3 py-1.5 border border-slate-200 text-slate-600 text-xs font-semibold rounded-lg hover:bg-slate-50 transition-all">View Archive</button>
+                            <button class="px-3 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-lg hover:bg-slate-800 shadow-sm flex items-center gap-1 transition-all">
+                                <span class="material-icons-outlined text-sm">add</span> New Matter
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50/70 border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                                    <th class="py-3 px-6">Matter / Document Name</th>
+                                    <th class="py-3 px-4">Reference ID</th>
+                                    <th class="py-3 px-4">Status</th>
+                                    <th class="py-3 px-4">Last Activity</th>
+                                    <th class="py-3 px-6 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-sm">
+                                {% for matter in data.recent_matters %}
+                                <tr class="hover:bg-slate-50/40 transition-colors">
+                                    <td class="py-4 px-6 flex items-start gap-3">
+                                        <div class="text-slate-400 p-1.5 bg-slate-50 rounded border border-slate-100 mt-0.5">
+                                            <span class="material-icons-outlined text-lg">description</span>
+                                        </div>
+                                        <div>
+                                            <div class="font-bold text-slate-800">{{ matter.name }}</div>
+                                            <div class="text-[11px] text-slate-400 font-medium mt-0.5">{{ matter.category }}</div>
+                                        </div>
+                                    </td>
+                                    <td class="py-4 px-4 font-mono text-xs text-slate-500">{{ matter.ref_id }}</td>
+                                    <td class="py-4 px-4">
+                                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border {{ matter.status_color }}">
+                                            {{ matter.status }}
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-4 text-xs text-slate-500 font-medium">{{ matter.last_active }}</td>
+                                    <td class="py-4 px-6 text-right">
+                                        <button class="text-slate-400 hover:text-slate-600 transition-colors p-1">
+                                            <span class="material-icons-outlined text-lg">more_vert</span>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            {% elif current_page == 'search' %}
+                <div class="flex gap-6 items-start h-full">
+                    <div class="flex-1 min-w-0 space-y-6">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Judgments Repository</h2>
+                                <p class="text-slate-500 text-xs mt-1 font-medium">Explore 1.2M+ global legal precedents powered by JurisAI.</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="px-4 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-50 flex items-center gap-2 shadow-sm">
+                                    <span class="material-icons-outlined text-sm">bookmark_border</span> Save Search
+                                </button>
+                                <button class="px-4 py-2 bg-slate-900 text-white text-xs font-semibold rounded-lg hover:bg-slate-800 flex items-center gap-2 shadow-sm">
+                                    <span class="material-icons-outlined text-sm">tune</span> Advanced Parameters
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Year Range</label>
+                                    <select class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-indigo-500">
+                                        <option>2020 - 2024</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Jurisdiction/Court</label>
+                                    <select class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-indigo-500">
+                                        <option>Supreme Court</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Category</label>
+                                    <select class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-indigo-500">
+                                        <option>Constitutional Law</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Bench Size</label>
+                                    <select class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-indigo-500">
+                                        <option>Single Judge</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-end gap-3 pt-2 border-t border-slate-100">
+                                <button class="text-slate-400 hover:text-slate-600 p-2 rounded-lg transition-colors">
+                                    <span class="material-icons-outlined text-lg">refresh</span>
+                                </button>
+                                <button class="px-5 py-2 bg-indigo-500 text-white text-xs font-bold rounded-lg hover:bg-indigo-600 shadow-sm">
+                                    Apply Filters
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between text-xs font-medium text-slate-500 px-1">
+                            <div>Showing 1-10 of <span class="text-slate-800 font-semibold">{{ data.results_count }}</span> Results</div>
+                            <div class="flex items-center gap-4">
+                                <button class="flex items-center gap-1 text-slate-700 font-semibold"><span class="material-icons-outlined text-sm">sort</span> Relevance</button>
+                                <div class="flex border border-slate-200 bg-white rounded-md overflow-hidden">
+                                    <button class="p-1 bg-slate-50 text-slate-700 border-r border-slate-200"><span class="material-icons-outlined text-sm">apps</span></button>
+                                    <button class="p-1 text-slate-400 hover:bg-slate-50"><span class="material-icons-outlined text-sm">reorder</span></button>
+                                    <button class="p-1 text-slate-400 hover:bg-slate-50"><span class="material-icons-outlined text-sm">view_agenda</span></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            {% for case in data.results %}
+                            <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-slate-100 group hover:shadow-md transition-all">
+                                <div class="flex-1 p-6 space-y-4">
+                                    <div class="flex items-center gap-3">
+                                        <span class="px-2 py-0.5 border text-[10px] font-bold rounded {{ case.badge_style }} tracking-wide">{{ case.badge }}</span>
+                                        <span class="text-xs font-mono text-slate-400 font-medium">{{ case.citation }}</span>
+                                    </div>
+                                    <h3 class="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors text-base leading-snug">{{ case.title }}</h3>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-xs font-medium text-slate-600">
+                                        <div class="flex items-center gap-2"><span class="material-icons-outlined text-slate-400 text-sm">gavel</span> {{ case.court }}</div>
+                                        <div class="flex items-center gap-2"><span class="material-icons-outlined text-slate-400 text-sm">groups</span> {{ case.bench }}</div>
+                                        <div class="flex items-center gap-2"><span class="material-icons-outlined text-slate-400 text-sm">calendar_today</span> Decided: {{ case.date }}</div>
+                                        <div class="flex items-center gap-2"><span class="material-icons-outlined text-slate-400 text-sm">account_balance</span> {{ case.topic }}</div>
+                                    </div>
+                                    <div class="flex flex-wrap gap-2 pt-2">
+                                        {% for tag in case.tags %}
+                                        <span class="px-2.5 py-1 text-[11px] font-semibold text-slate-500 bg-slate-50 border border-slate-200 rounded-md shadow-2xs 
+                                        {% if loop.first and case.badge_critical %} bg-rose-50 text-rose-700 border-rose-200 {% endif %}">
+                                            {{ tag }}
+                                        </span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="w-full md:w-72 bg-slate-50/70 p-6 flex flex-col justify-between">
+                                    <div>
+                                        <div class="flex items-center gap-1.5 text-slate-700 font-bold text-xs tracking-wide uppercase mb-2">
+                                            <span class="material-icons-outlined text-sm text-indigo-500">auto_awesome</span> AI Insight Summary
+                                        </div>
+                                        <p class="text-slate-500 text-xs leading-relaxed font-medium">{{ case.ai_summary }}</p>
+                                    </div>
+                                    <button class="w-full mt-4 py-2 border border-slate-200 bg-white hover:bg-indigo-50 text-slate-700 hover:text-indigo-600 text-xs font-bold rounded-lg transition-all shadow-2xs">
+                                        Full Analysis
+                                    </button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="flex items-center justify-between pt-4">
+                            <button class="px-3 py-1.5 border border-slate-200 text-slate-400 text-xs font-bold rounded-lg bg-white cursor-not-allowed">Previous</button>
+                            <div class="flex items-center gap-1.5">
+                                <span class="h-7 w-7 rounded-md bg-slate-900 text-white text-xs font-bold flex items-center justify-center cursor-pointer">1</span>
+                                <span class="h-7 w-7 rounded-md text-slate-500 hover:bg-slate-100 text-xs font-bold flex items-center justify-center cursor-pointer">2</span>
+                                <span class="h-7 w-7 rounded-md text-slate-500 hover:bg-slate-100 text-xs font-bold flex items-center justify-center cursor-pointer">3</span>
+                                <span class="text-slate-400 text-xs px-1">...</span>
+                                <span class="h-7 w-7 rounded-md text-slate-500 hover:bg-slate-100 text-xs font-bold flex items-center justify-center cursor-pointer">44</span>
+                            </div>
+                            <button class="px-4 py-1.5 border border-slate-200 text-slate-700 text-xs font-bold rounded-lg bg-white hover:bg-slate-50 shadow-2xs flex items-center gap-1">Next <span class="material-icons-outlined text-sm">chevron_right</span></button>
+                        </div>
+                    </div>
+
+                    <aside class="w-80 flex-shrink-0 bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden sticky top-0 flex flex-col justify-between h-[calc(100vh-8.5rem)]">
+                        <div class="p-6 space-y-6 overflow-y-auto flex-1">
+                            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                                <h3 class="font-bold text-slate-900 text-base">Analysis Preview</h3>
+                                <button class="text-slate-400 hover:text-slate-600"><span class="material-icons-outlined">close</span></button>
+                            </div>
+                            <div class="space-y-2">
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Historical Context</h4>
+                                <p class="text-xs text-slate-600 font-medium leading-relaxed">This case overruled the 1994 'Sterling vs. Commissioner' precedent, redefining corporate liability thresholds for the modern digital era.</p>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-slate-400">
+                                    <span class="material-icons-outlined text-sm">trending_up</span> Sentiment Analysis
+                                </div>
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mt-3">
+                                    <div class="bg-emerald-500 h-full rounded-full" style="width: 70%"></div>
+                                </div>
+                                <p class="text-[11px] text-slate-500 font-medium leading-normal mt-2">70% Favorable towards Defendant. Rationale: Procedural errors in lower court filing.</p>
+                            </div>
+                            <div class="space-y-3">
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Key Findings</h4>
+                                <ul class="space-y-2 text-xs font-medium text-slate-600 list-disc list-inside marker:text-slate-400">
+                                    <li>Burden of proof restated.</li>
+                                    <li>Digital assets classified as 'Intangible Property'.</li>
+                                    <li>Discovery timelines tightened.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="p-4 border-t border-slate-100 bg-slate-50">
+                            <button class="w-full py-2.5 bg-black text-white text-xs font-bold rounded-lg hover:bg-slate-800 shadow transition-all">
+                                Open Full Case Study
+                            </button>
+                        </div>
+                    </aside>
+                </div>
+
+            {% elif current_page == 'chat' %}
+                <div class="flex gap-6 items-start h-[calc(100vh-8rem)]">
+                    <div class="flex-1 flex flex-col justify-between h-full min-w-0 bg-transparent">
+                        <div class="flex items-center justify-between pb-4 border-b border-slate-200/60 flex-shrink-0">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Research Assistant</h2>
+                                <p class="text-slate-400 text-xs mt-0.5 font-medium">Active Model: <span class="text-slate-600 font-semibold">JurisAI-Legal-V4 (GPT-4 Enhanced)</span></p>
+                            </div>
+                            <button class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-50 flex items-center gap-1.5 shadow-2xs">
+                                <span class="material-icons-outlined text-sm">history</span> History
+                            </button>
+                        </div>
+
+                        <div class="flex-1 overflow-y-auto py-6 pr-2 space-y-6 text-sm leading-relaxed">
+                            <div class="flex items-start gap-4">
+                                <div class="bg-slate-900 text-white p-2 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <span class="material-icons-outlined text-sm">smart_toy</span>
+                                </div>
+                                <div class="space-y-1 max-w-2xl">
+                                    <div class="bg-white border border-slate-200/80 rounded-xl p-4 shadow-2xs text-slate-800">
+                                        Good morning, Counselor. I've finished indexing the latest deposition from **{{ data.case_name }}**. I'm ready to analyze specific clauses or check for inconsistencies with the defendant's prior testimony.<br><br>How would you like to proceed today?
+                                    </div>
+                                    <div class="text-[10px] text-slate-400 px-1 font-medium">09:14 AM</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-4 justify-end">
+                                <div class="space-y-1 max-w-2xl text-right">
+                                    <div class="bg-slate-950 text-slate-100 rounded-xl p-4 shadow-sm text-left font-medium text-[13px] leading-relaxed">
+                                        Analyze the discrepancy between Witness B's testimony on page 14 of the deposition and the forensic report regarding the timeline of events on the night of the 14th.
+                                    </div>
+                                    <div class="text-[10px] text-slate-400 px-1 font-medium">09:16 AM</div>
+                                </div>
+                                <div class="bg-slate-700 text-white p-2 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
+                                    <span class="material-icons-outlined text-sm">person</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-4">
+                                <div class="bg-slate-900 text-white p-2 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <span class="material-icons-outlined text-sm">smart_toy</span>
+                                </div>
+                                <div class="space-y-1 w-full max-w-2xl">
+                                    <div class="bg-white border border-slate-200/80 rounded-xl p-4 shadow-2xs text-slate-800 space-y-4">
+                                        <p>I found a significant temporal contradiction. Here is the comparison breakdown:</p>
+                                        <div class="border border-slate-200 rounded-lg overflow-hidden text-xs">
+                                            <table class="w-full border-collapse text-left">
+                                                <thead>
+                                                    <tr class="bg-slate-50 border-b border-slate-200 font-bold text-slate-500">
+                                                        <th class="py-2 px-3 w-1/4">Source</th>
+                                                        <th class="py-2 px-3 w-1/4">Reported Time</th>
+                                                        <th class="py-2 px-3">Action Description</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="divide-y divide-slate-100 text-slate-700 font-medium">
+                                                    {% for row in data.contradiction_rows %}
+                                                    <tr>
+                                                        <td class="py-2.5 px-3 bg-slate-50/40 text-slate-900 font-semibold">{{ row.source }}</td>
+                                                        <td class="py-2.5 px-3 font-mono text-slate-500">{{ row.time }}</td>
+                                                        <td class="py-2.5 px-3 text-slate-600 leading-normal">{{ row.desc }}</td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="text-[10px] text-slate-400 px-1 font-medium">09:17 AM</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 flex-shrink-0 space-y-3">
+                            <div class="bg-white border border-slate-200 rounded-xl p-2 flex items-center gap-3 shadow-md focus-within:border-indigo-500 transition-all">
+                                <button class="text-slate-400 hover:text-slate-600 p-2 rounded-lg hover:bg-slate-50"><span class="material-icons-outlined">attach_file</span></button>
+                                <input type="text" placeholder="Ask JurisAI anything about the Anderson case..." 
+                                       class="flex-1 text-sm bg-transparent border-none text-slate-700 placeholder-slate-400 focus:outline-none py-1" />
+                                <button class="text-slate-400 hover:text-slate-600 p-2 rounded-lg hover:bg-slate-50"><span class="material-icons-outlined">mic</span></button>
+                                <button class="bg-black hover:bg-slate-800 text-white p-2 rounded-lg flex items-center justify-center transition-all shadow">
+                                    <span class="material-icons-outlined text-sm">send</span>
+                                </button>
+                            </div>
+                            <div class="flex items-center gap-3 px-1 text-xs font-semibold text-slate-400">
+                                {% for tag in data.hashtags %}
+                                <span class="hover:text-slate-600 cursor-pointer transition-colors">{{ tag }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <aside class="w-72 flex-shrink-0 bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col h-full justify-between">
+                        <div class="p-5 space-y-5 overflow-y-auto flex-1 text-xs">
+                            <div class="flex items-start justify-between">
+                                <div class="space-y-1">
+                                    <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded text-[9px] font-bold tracking-wide border border-indigo-100 uppercase">Active Case</span>
+                                    <h3 class="text-base font-bold text-slate-900 leading-tight pt-1">{{ data.case_name }}</h3>
+                                    <p class="text-slate-400 font-medium">Matter No: {{ data.matter_no }}</p>
+                                </div>
+                                <button class="text-slate-400 hover:text-slate-600"><span class="material-icons-outlined text-base">more_horiz</span></button>
+                            </div>
+
+                            <div class="space-y-2 pt-1">
+                                <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+                                    Key Metadata <span class="material-icons-outlined text-xs text-slate-300">info</span>
+                                </div>
+                                <div class="border border-slate-100 bg-slate-50/50 rounded-lg p-3 space-y-2.5 font-medium text-slate-700">
+                                    <div>
+                                        <div class="text-[10px] text-slate-400 mb-0.5">Presiding Judge</div>
+                                        <div class="font-bold text-slate-800 text-[13px]">{{ data.metadata.judge }}</div>
+                                    </div>
+                                    <div class="border-t border-slate-200/60 pt-2">
+                                        <div class="text-[10px] text-slate-400 mb-0.5">Next Hearing</div>
+                                        <div class="font-bold text-slate-800 text-[13px]">{{ data.metadata.hearing }}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <h4 class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Active Context</h4>
+                                <div class="space-y-2">
+                                    {% for file in data.context_files %}
+                                    <div class="flex items-center justify-between p-2.5 border border-slate-100 bg-white rounded-lg hover:bg-slate-50 cursor-pointer group transition-colors">
+                                        <div class="flex items-center gap-2.5 min-w-0">
+                                            <span class="material-icons-outlined text-slate-400 text-base">description</span>
+                                            <div class="min-w-0">
+                                                <div class="font-bold text-slate-800 truncate">{{ file.name }}</div>
+                                                <div class="text-[10px] text-slate-400 font-medium mt-0.5">{{ file.pages }} • Indexed</div>
+                                            </div>
+                                        </div>
+                                        <span class="material-icons-outlined text-slate-300 group-hover:text-slate-500 text-sm flex-shrink-0">open_in_new</span>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <h4 class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Evidence Preview</h4>
+                                <div class="relative rounded-lg overflow-hidden border border-slate-200 bg-slate-900 group h-28 flex items-end">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent z-10"></div>
+                                    <div class="absolute inset-0 flex items-center justify-center opacity-20 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:12px_12px]"></div>
+                                    <div class="p-3 z-20 w-full flex items-center gap-2 text-white">
+                                        <span class="material-icons-outlined text-slate-400 text-base">layers</span>
+                                        <div class="font-semibold text-[10px] truncate tracking-wide text-slate-200">Exhibit 14A: Office Premises Blueprint</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <h4 class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Case Team</h4>
+                                <div class="flex items-center -space-x-1.5 overflow-hidden">
+                                    <div class="h-6 w-6 rounded-full bg-slate-800 border border-white text-[8px] text-white flex items-center justify-center font-bold">MK</div>
+                                    <div class="h-6 w-6 rounded-full bg-indigo-600 border border-white text-[8px] text-white flex items-center justify-center font-bold">PS</div>
+                                    <div class="h-6 w-6 rounded-full bg-slate-100 border border-white text-[8px] text-slate-500 flex items-center justify-center font-bold shadow-2xs">+2</div>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+
+            {% elif current_page == 'upload' %}
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                    <div class="lg:col-span-2 space-y-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Document Ingestion</h2>
+                            <p class="text-slate-500 text-xs mt-1.5 leading-relaxed font-medium">Securely upload legal briefs, witness statements, and court transcripts. Our AI processing engine will index and analyze content for immediate searchability.</p>
+                        </div>
+
+                        <div class="border-2 border-dashed border-slate-300 rounded-xl p-10 bg-white text-center flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50/50 hover:border-indigo-400 transition-all group">
+                            <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl mb-4 group-hover:scale-105 transition-transform shadow-2xs">
+                                <span class="material-icons-outlined text-3xl">file_upload</span>
+                            </div>
+                            <h3 class="text-base font-bold text-slate-800 mb-1">Drag and drop case files</h3>
+                            <p class="text-xs text-slate-500 font-medium">or <span class="text-indigo-600 font-semibold underline">browse files</span> from your secure drive</p>
+                            <span class="text-[10px] font-bold text-slate-400 mt-6 tracking-wide uppercase">Max file size: 250MB</span>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                            <div class="p-4 border-b border-slate-100 flex items-center justify-between text-xs font-bold tracking-wider uppercase text-slate-400">
+                                <span>Active Uploads & History</span>
+                                <button class="text-slate-500 hover:text-slate-700 flex items-center gap-1 normal-case font-semibold"><span class="material-icons-outlined text-base">history</span> View Full Log</button>
+                            </div>
+                            <div class="divide-y divide-slate-100">
+                                {% for file in data.active_uploads %}
+                                <div class="p-5 flex items-center justify-between gap-6">
+                                    <div class="flex items-center gap-4 flex-1 min-w-0">
+                                        <div class="p-2.5 rounded-lg border border-slate-100 text-slate-400 bg-slate-50/50">
+                                            <span class="material-icons-outlined text-xl">{% if file.type == 'completed' %}check_circle{% else %}description{% endif %}</span>
+                                        </div>
+                                        <div class="flex-1 min-w-0 space-y-1.5">
+                                            <div class="flex items-center justify-between text-xs font-semibold text-slate-700">
+                                                <span class="truncate pr-4 font-bold">{{ file.name }}</span>
+                                                <span class="text-slate-400 text-[11px] font-medium {% if file.type == 'completed' %}text-emerald-600 font-bold{% endif %}">{{ file.meta }}</span>
+                                            </div>
+                                            <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden relative">
+                                                <!-- <div class="h-full rounded-full transition-all duration-300
+                                                    {% if file.type == 'uploading' %}bg-black{% elif file.type == 'processing' %}bg-slate-600 animate-pulse{% else %}bg-emerald-500{% endif %}"
+                                                    style="width: {{ file.progress_pct }}%">
+                                                </div> -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0">
+                                        {% if file.type == 'uploading' %}
+                                        <button class="text-slate-400 hover:text-slate-600 p-1"><span class="material-icons-outlined text-lg">close</span></button>
+                                        {% elif file.type == 'processing' %}
+                                        <button class="text-slate-400 hover:text-slate-600 p-1"><span class="material-icons-outlined text-lg">more_horiz</span></button>
+                                        {% else %}
+                                        <button class="px-4 py-1.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-bold rounded-lg shadow-2xs transition-colors">Analyze</button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="bg-[#0B132B] text-white p-6 rounded-xl border border-slate-800 shadow-lg relative overflow-hidden space-y-5">
+                            <div class="space-y-2">
+                                <span class="bg-slate-800/80 text-indigo-400 border border-slate-700/60 px-2 py-0.5 rounded text-[9px] font-bold tracking-wider uppercase">Security Enhancement</span>
+                                <h3 class="text-lg font-bold tracking-tight text-slate-100 pt-1">JurisAI Vault™</h3>
+                                <p class="text-slate-400 text-xs leading-relaxed font-medium">Upgrade to military-grade double encryption and persistent zero-trust storage for high-confidentiality caseloads.</p>
+                            </div>
+                            <button class="w-full py-2.5 bg-white text-slate-900 text-xs font-bold rounded-lg hover:bg-slate-50 shadow transition-all flex items-center justify-center gap-1.5">
+                                <span class="material-icons-outlined text-sm">enhanced_encryption</span> Upgrade to Vault
+                            </button>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                                <span class="material-icons-outlined text-base">info</span> Compatibility Matrix
+                            </div>
+                            <div class="space-y-4 pt-1">
+                                {% for matrix in data.compatibility_matrix %}
+                                <div class="flex gap-3.5 items-start text-xs">
+                                    <div class="p-2 bg-slate-50 border border-slate-100 text-slate-500 rounded-lg flex-shrink-0">
+                                        <span class="material-icons-outlined text-lg">{{ matrix.icon }}</span>
+                                    </div>
+                                    <div class="space-y-0.5">
+                                        <h4 class="font-bold text-slate-800 text-[13px]">{{ matrix.title }}</h4>
+                                        <p class="text-slate-600 font-semibold text-[11px]">{{ matrix.ext }}</p>
+                                        <p class="text-slate-400 font-medium text-[11px] leading-normal">{{ matrix.desc }}</p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 border border-slate-150/80 rounded-xl p-5 space-y-2 text-xs">
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                                <span class="material-icons-outlined text-base">gavel</span> Compliance & Privacy
+                            </div>
+                            <p class="text-slate-500 leading-relaxed font-medium text-[11px]">All uploads are encrypted in transit using TLS 1.3 and at rest with AES-256. Data remains within the sovereign jurisdiction of the selected region.</p>
+                        </div>
+                    </div>
+                </div>
+
+            {% elif current_page == 'analytics' %}
+                <div class="space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Legal Intelligence Analytics</h2>
+                            <p class="text-slate-500 text-xs mt-0.5 font-medium">Real-time performance metrics and historical judgment trends.</p>
+                        </div>
+                        <div class="flex items-center gap-2 self-end sm:self-auto">
+                            <button class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-50 flex items-center gap-2 shadow-2xs">
+                                <span class="material-icons-outlined text-sm text-slate-400">calendar_today</span> Last 30 Days
+                            </button>
+                            <button class="px-4 py-2 bg-black text-white text-xs font-semibold rounded-lg hover:bg-slate-800 flex items-center gap-2 shadow-sm">
+                                <span class="material-icons-outlined text-sm">file_download</span> Export Report
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-2xs space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div class="p-2.5 bg-slate-50 border border-slate-100 rounded-lg text-indigo-600">
+                                    <span class="material-icons-outlined text-xl">analytics</span>
+                                </div>
+                                <span class="text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-md flex items-center gap-0.5">
+                                    <span class="material-icons-outlined text-[10px]">trending_up</span> {{ data.metrics.judgments.change }}
+                                </span>
+                            </div>
+                            <div>
+                                <h4 class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Judgments Analyzed</h4>
+                                <div class="text-3xl font-bold text-slate-900 tracking-tight mt-1">{{ data.metrics.judgments.val }}</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-2xs space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div class="p-2.5 bg-slate-50 border border-slate-100 rounded-lg text-indigo-600">
+                                    <span class="material-icons-outlined text-xl">verified_user</span>
+                                </div>
+                                <span class="text-[11px] font-semibold text-slate-400 tracking-wide">{{ data.metrics.compliance.change }}</span>
+                            </div>
+                            <div>
+                                <h4 class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Compliance Score</h4>
+                                <div class="text-3xl font-bold text-slate-900 tracking-tight mt-1">{{ data.metrics.compliance.val }}</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-2xs space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div class="p-2.5 bg-slate-50 border border-slate-100 rounded-lg text-indigo-600">
+                                    <span class="material-icons-outlined text-xl">hourglass_top</span>
+                                </div>
+                                <span class="text-xs font-bold text-rose-600 bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-md flex items-center gap-0.5">
+                                    <span class="material-icons-outlined text-[10px]">trending_down</span> {{ data.metrics.resolution.change }}
+                                </span>
+                            </div>
+                            <div>
+                                <h4 class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Avg. Resolution Time</h4>
+                                <div class="text-3xl font-bold text-slate-900 tracking-tight mt-1">{{ data.metrics.resolution.val }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+                        <div class="lg:col-span-2 bg-white border border-slate-200 rounded-xl p-6 shadow-2xs flex flex-col justify-between min-h-[300px]">
+                            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                                <h3 class="font-bold text-slate-800 text-base tracking-tight">Judgment Trends</h3>
+                                <div class="flex items-center gap-4 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                                    <span class="flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-slate-900"></span> Civil</span>
+                                    <span class="flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-indigo-500"></span> Criminal</span>
+                                </div>
+                            </div>
+                            <div class="flex-1 flex flex-col justify-end min-h-[180px] px-2 relative">
+                                <div class="absolute inset-x-0 top-1/3 border-b border-dashed border-slate-100"></div>
+                                <div class="absolute inset-x-0 top-2/3 border-b border-dashed border-slate-100"></div>
+                                <div class="w-full flex justify-between text-[11px] font-semibold text-slate-400 pt-4 border-t border-slate-100">
+                                    <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-2xs flex flex-col justify-between min-h-[300px]">
+                            <div class="border-b border-slate-100 pb-3">
+                                <h3 class="font-bold text-slate-800 text-base tracking-tight">Case Success Rate</h3>
+                            </div>
+                            <div class="flex flex-col items-center justify-center my-auto py-2">
+                                <div class="relative flex items-center justify-center h-28 w-28">
+                                    <svg class="absolute inset-0 transform -rotate-90" viewBox="0 0 36 36">
+                                        <path class="text-slate-100" stroke-width="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                        <path class="text-slate-900" stroke-dasharray="78, 100" stroke-width="3" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    </svg>
+                                    <div class="text-center">
+                                        <div class="text-2xl font-black text-slate-900 tracking-tighter">78%</div>
+                                        <div class="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Positive</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="space-y-1.5 text-xs pt-3 border-t border-slate-100">
+                                {% for row in data.success_rates %}
+                                <div class="flex items-center justify-between font-medium text-slate-500">
+                                    <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full {{ row.color }}"></span> {{ row.label }}</div>
+                                    <span class="font-bold text-slate-800">{{ row.count }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+                        <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+                            <h3 class="font-bold text-slate-800 text-lg tracking-tight">Top Cited Legal Sections</h3>
+                            <button class="text-indigo-600 hover:text-indigo-700 text-xs font-bold tracking-wide">View All Citations</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50/70 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                        <th class="py-3 px-6 w-1/5">Section ID</th>
+                                        <th class="py-3 px-4 w-1/2">Description</th>
+                                        <th class="py-3 px-4">Frequency</th>
+                                        <th class="py-3 px-6 text-right">Trend</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-xs font-medium text-slate-600">
+                                    {% for row in data.cited_sections %}
+                                    <tr class="hover:bg-slate-50/30 transition-colors">
+                                        <td class="py-4 px-6 font-bold text-slate-900 whitespace-nowrap">{{ row.id }}</td>
+                                        <td class="py-4 px-4 leading-relaxed text-slate-500 font-medium">{{ row.desc }}</td>
+                                        <td class="py-4 px-4 font-bold text-slate-800 whitespace-nowrap">{{ row.freq }}</td>
+                                        <td class="py-4 px-6 text-right font-bold whitespace-nowrap {{ row.trend_class }}">{{ row.trend }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="md:col-span-2 rounded-xl border border-slate-900 bg-slate-950 p-6 shadow-md h-36 flex flex-col justify-end relative overflow-hidden group cursor-pointer">
+                            <div class="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] opacity-30"></div>
+                            <div class="z-10 max-w-md">
+                                <h4 class="text-sm font-bold text-white tracking-wide">Historical Data Archive</h4>
+                                <p class="text-[11px] text-slate-400 leading-normal mt-1 font-medium">Access judgments dating back to 1950 with full semantic cross-referencing.</p>
+                            </div>
+                        </div>
+                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-3xs flex flex-col items-center justify-center text-center h-36 space-y-2">
+                            <div class="p-1.5 bg-slate-50 border border-slate-100 text-slate-800 rounded-lg shadow-3xs">
+                                <span class="material-icons-outlined text-lg">auto_awesome</span>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-900">AI Model Update</h4>
+                                <p class="text-[10px] text-slate-400 font-medium leading-normal max-w-[200px] mt-0.5">Our neural network just completed training on 50,000+ new commercial tax filings.</p>
+                            </div>
+                            <button class="text-slate-700 hover:text-black border-b border-slate-300 hover:border-slate-800 text-[10px] font-bold tracking-wide uppercase pt-1 pb-0.5 transition-colors">Explore Recent Training</button>
+                        </div>
+                    </div>
+
+                    <footer class="pt-6 border-t border-slate-200/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] font-semibold text-slate-400 tracking-wide">
+                        <div>© 2026 JurisAI Legal Intelligence Platform. All Rights Reserved.</div>
+                        <div class="flex items-center gap-4 text-slate-400">
+                            <span class="hover:text-slate-600 cursor-pointer">Privacy Policy</span>
+                            <span class="hover:text-slate-600 cursor-pointer">Audit Logs</span>
+                            <span class="hover:text-slate-600 cursor-pointer">API Status</span>
+                        </div>
+                    </footer>
+                </div>
+
+            {% elif current_page == 'comparison' %}
+                <div class="flex gap-6 items-start h-[calc(100vh-8.5rem)]">
+                    <div class="flex-1 min-w-0 flex flex-col justify-between h-full space-y-6">
+                        <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs flex items-center gap-3 flex-shrink-0">
+                            <div class="flex-1 relative flex items-center">
+                                <span class="material-icons-outlined absolute left-3 text-slate-400 text-base">search</span>
+                                <input type="text" placeholder="Search case law to add to comparison..." 
+                                       class="w-full pl-10 pr-4 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium focus:outline-none focus:border-indigo-500 text-slate-700 placeholder-slate-400" />
+                            </div>
+                            <div class="flex items-center gap-1 text-[9px] font-bold font-mono tracking-tight">
+                                <span class="px-1.5 py-1 bg-slate-900 text-white rounded">C-12</span>
+                                <span class="px-1.5 py-1 bg-slate-800 text-slate-300 rounded">R-05</span>
+                                <button class="p-1 border border-slate-200 rounded bg-slate-50 text-slate-500 hover:bg-slate-100"><span class="material-icons-outlined text-xs">add</span></button>
+                            </div>
+                            <button class="px-4 py-2 bg-black text-white text-xs font-bold rounded-lg hover:bg-slate-800 tracking-wide flex items-center gap-1.5 shadow-sm">
+                                <span class="material-icons-outlined text-sm">autorenew</span> RUN ANALYSIS
+                            </button>
+                        </div>
+
+                        <div class="flex-1 bg-white border border-slate-200 rounded-xl shadow-2xs overflow-hidden flex flex-col text-xs font-medium">
+                            <div class="grid grid-cols-3 bg-slate-50/50 border-b border-slate-200 uppercase tracking-wider text-[10px] font-bold text-slate-400">
+                                <div class="p-4 border-r border-slate-200 flex items-center">Comparison Metric</div>
+                                {% for case in data.cases %}
+                                <div class="p-4 {% if not loop.last %}border-r border-slate-200{% endif %} text-slate-900 normal-case space-y-1">
+                                    <h3 class="text-sm font-black tracking-tight leading-snug">{{ case.name }}</h3>
+                                    <p class="text-[10px] text-slate-400 font-medium font-mono">{{ case.meta }}</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="grid grid-cols-3 border-b border-slate-150">
+                                <div class="p-4 bg-slate-50/30 border-r border-slate-200 font-bold text-slate-500 flex items-start pt-5">Core Reasoning</div>
+                                {% for case in data.cases %}
+                                <div class="p-5 {% if not loop.last %}border-r border-slate-200{% endif %} text-slate-600 leading-relaxed space-y-4">
+                                    <p>{{ case.reasoning }}</p>
+                                    <span class="inline-block px-2 py-0.5 bg-slate-100 border border-slate-200 text-slate-700 text-[9px] font-black tracking-wider rounded">{{ case.badge }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="grid grid-cols-3 border-b border-slate-150">
+                                <div class="p-4 bg-slate-50/30 border-r border-slate-200 font-bold text-slate-500 flex items-center">Shared Citations</div>
+                                {% for case in data.cases %}
+                                <div class="p-4 {% if not loop.last %}border-r border-slate-200{% endif %} text-slate-600 flex flex-col gap-1 justify-center">
+                                    {% for citation in case.citations %}
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="h-1 w-1 rounded-full bg-slate-400"></span> {{ citation }}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="grid grid-cols-3 flex-1">
+                                <div class="p-4 bg-slate-50/30 border-r border-slate-200 font-bold text-slate-500 flex items-start pt-5">Compliance Status</div>
+                                {% for case in data.cases %}
+                                <div class="p-5 {% if not loop.last %}border-r border-slate-200{% endif %} space-y-1.5">
+                                    <div class="{{ case.status_color }} text-[11px] uppercase tracking-wide">
+                                        <span class="material-icons-outlined text-sm">{% if 'NON' in case.status %}report_problem{% else %}check_circle_outline{% endif %}</span>
+                                        {{ case.status }}
+                                    </div>
+                                    <p class="text-slate-400 text-[11px] leading-normal font-medium">{{ case.status_desc }}</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 flex-shrink-0">
+                            <h4 class="text-xs font-bold text-slate-900 flex items-center gap-1.5"><span class="material-icons-outlined text-base">smart_toy</span> AI Conflict Analysis</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="md:col-span-2 bg-[#0F172A] text-slate-300 p-4 rounded-xl text-xs leading-relaxed border border-slate-800 shadow-md">
+                                    The cases diverge fundamentally on the definition of <span class="text-white font-semibold underline decoration-slate-600">"Institutional Access Rights."</span> While *Smith* prioritizes internal security protocols as a shielding bar, *Doe* looks straight at individual privacy expectations.
+                                </div>
+                                <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs space-y-1.5 flex flex-col justify-center">
+                                    <h5 class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Reconciliation Path</h5>
+                                    <p class="text-[11px] text-slate-600 font-semibold leading-relaxed">Argue the 'Third Party Doctrine' as a bridge to align both rulings under modern digital discovery rules.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <aside class="w-72 flex-shrink-0 bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col h-full justify-between">
+                        <div class="p-5 space-y-5 overflow-y-auto flex-1 text-xs">
+                            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                                <h3 class="font-bold text-slate-900 text-sm">Case Metadata</h3>
+                                <button class="text-slate-400 hover:text-slate-600"><span class="material-icons-outlined text-base">close</span></button>
+                            </div>
+
+                            <div class="border border-slate-100 bg-slate-50/50 rounded-xl p-4 h-28 flex items-center justify-center relative overflow-hidden group">
+                                <svg class="w-full h-full text-slate-200" viewBox="0 0 100 50">
+                                    <path d="M20,25 L50,15 L80,30 M50,15 L40,35 L20,25 M50,15 L65,38 L80,30" stroke="currentColor" stroke-width="0.5" fill="none" stroke-dasharray="1,1"/>
+                                    <circle cx="20" cy="25" r="2.5" class="fill-slate-400 group-hover:fill-indigo-500 transition-colors" />
+                                    <circle cx="50" cy="15" r="3" class="fill-slate-700" />
+                                    <circle cx="80" cy="30" r="2" class="fill-slate-400" />
+                                    <circle cx="40" cy="35" r="2" class="fill-slate-300" />
+                                    <circle cx="65" cy="38" r="2.5" class="fill-slate-300" />
+                                </svg>
+                            </div>
+
+                            <div class="space-y-4 pt-1 font-medium text-slate-600 leading-relaxed">
+                                <div class="space-y-1">
+                                    <h4 class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Full Title</h4>
+                                    <p class="text-slate-800 font-bold leading-normal text-[11px]">{{ data.metadata.title }}</p>
+                                </div>
+                                <div class="space-y-1">
+                                    <h4 class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Court Type</h4>
+                                    <p class="text-slate-700 text-[11px] leading-normal">{{ data.metadata.court }}</p>
+                                </div>
+                                <div class="space-y-1">
+                                    <h4 class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Opinion Author</h4>
+                                    <p class="text-slate-700 text-[11px]">{{ data.metadata.author }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+
+            {% elif current_page in ['settings', 'profile'] %}
+                <div class="flex flex-col lg:flex-row gap-6 items-start">
+                    
+                    <div class="flex-1 min-w-0 space-y-6">
+                        
+                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div class="flex items-center gap-4">
+                                <div class="h-14 w-14 rounded-xl bg-slate-900 text-slate-200 border border-slate-800 flex-shrink-0 flex items-center justify-center font-black text-lg shadow-sm">
+                                    AT
+                                </div>
+                                <div class="space-y-0.5">
+                                    <div class="flex items-center gap-2">
+                                        <h3 class="text-lg font-black tracking-tight text-slate-900 leading-none">{{ data.profile.name }}</h3>
+                                        <span class="bg-black text-white text-[8px] font-black tracking-widest px-1.5 py-0.5 rounded uppercase">{{ data.profile.tier }}</span>
+                                    </div>
+                                    <p class="text-slate-500 font-medium text-xs">{{ data.profile.role }}</p>
+                                    <div class="flex items-center gap-1 text-[11px] font-semibold text-slate-400 pt-0.5">
+                                        <span class="material-icons-outlined text-xs">place</span> {{ data.profile.location }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 sm:self-center">
+                                <button class="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-lg shadow-3xs transition-colors">Edit Profile</button>
+                                <button class="px-4 py-2 bg-black hover:bg-slate-800 text-white text-xs font-bold rounded-lg shadow-sm transition-colors">Upgrade Account</button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-3xs space-y-2">
+                                <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                                    <span>Cases Researched</span>
+                                    <span class="text-emerald-600 font-extrabold">+12% this month</span>
+                                </div>
+                                <div class="text-2xl font-black text-slate-900 tracking-tight">{{ data.stats.researched }}</div>
+                            </div>
+                            <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-3xs space-y-2">
+                                <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                                    <span>Documents Uploaded</span>
+                                    <span class="text-emerald-600 font-extrabold">+4% this month</span>
+                                </div>
+                                <div class="text-2xl font-black text-slate-900 tracking-tight">{{ data.stats.uploaded }}</div>
+                            </div>
+                            <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-3xs flex flex-col justify-between space-y-2">
+                                <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Subscription Period</div>
+                                <div class="space-y-1.5">
+                                    <div class="text-xs font-black text-slate-800 tracking-wide">{{ data.stats.days_remaining }} Days Remaining</div>
+                                    <div class="w-full bg-slate-100 h-1 rounded-full overflow-hidden">
+                                        <!-- <div class="bg-slate-900 h-full rounded-full" style="width: {{ data.stats.progress_pct }}%"></div> -->
+                                    </div>
+                                    <div class="text-[10px] font-medium text-slate-400 text-right">Renewing on Oct 12, 2024</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded-xl shadow-2xs p-5 space-y-4">
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-900 tracking-tight">AI Research Mode</h4>
+                                <p class="text-slate-400 text-[11px] font-medium">Configure how JurisAI interprets and analyzes your legal documents.</p>
+                            </div>
+                            <div class="divide-y divide-slate-100 pt-1">
+                                {% for mode in data.ai_modes %}
+                                <div class="py-4 flex items-center justify-between gap-6 {% if loop.first %}pt-0{% endif %} {% if loop.last %}pb-0{% endif %}">
+                                    <div class="space-y-0.5">
+                                        <h5 class="text-xs font-bold text-slate-800 tracking-wide">{{ mode.title }}</h5>
+                                        <p class="text-slate-400 text-[11px] font-medium leading-normal">{{ mode.desc }}</p>
+                                    </div>
+                                    <button class="w-9 h-5 rounded-full flex items-center p-0.5 transition-colors shadow-inner flex-shrink-0
+                                        {% if mode.status %}bg-black justify-end{% else %}bg-slate-200 justify-start{% endif %}">
+                                        <span class="h-4 w-4 rounded-full bg-white shadow-sm"></span>
+                                    </button>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded-xl shadow-2xs p-5 space-y-5">
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-900 tracking-tight">Notification Preferences</h4>
+                                <p class="text-slate-400 text-[11px] font-medium">Control how you receive alerts and case updates.</p>
+                            </div>
+                            <div class="flex flex-col md:flex-row gap-6 md:items-start justify-between text-xs font-medium">
+                                <div class="space-y-3.5 flex-1">
+                                    <label class="flex items-center gap-3 cursor-pointer text-slate-700">
+                                        <span class="h-4 w-4 border-2 border-slate-900 bg-slate-900 rounded flex items-center justify-center text-white font-bold text-[10px] shadow-3xs">✓</span>
+                                        Email Alerts
+                                    </label>
+                                    <label class="flex items-center gap-3 cursor-pointer text-slate-400">
+                                        <span class="h-4 w-4 border-2 border-slate-200 bg-white rounded block shadow-3xs"></span>
+                                        SMS Notifications
+                                    </label>
+                                    <label class="flex items-center gap-3 cursor-pointer text-slate-700">
+                                        <span class="h-4 w-4 border-2 border-slate-900 bg-slate-900 rounded flex items-center justify-center text-white font-bold text-[10px] shadow-3xs">✓</span>
+                                        Desktop Push
+                                    </label>
+                                </div>
+                                <div class="w-full md:w-64 space-y-2">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Digest Frequency</label>
+                                    <div class="relative flex items-center bg-slate-50 border border-slate-200 rounded-lg overflow-hidden px-3 py-2 cursor-pointer shadow-3xs">
+                                        <select class="w-full bg-transparent text-slate-700 text-xs font-bold focus:outline-none appearance-none cursor-pointer pr-6">
+                                            <option>Immediate</option>
+                                        </select>
+                                        <span class="material-icons-outlined text-sm text-slate-400 absolute right-3 pointer-events-none">expand_more</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="w-full lg:w-80 flex-shrink-0 space-y-6">
+                        
+                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-2xs space-y-4">
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                                <span class="material-icons-outlined text-base">shield</span> Security
+                            </div>
+                            <div class="border-l-2 border-emerald-500 bg-slate-50/50 p-3 text-xs font-medium text-slate-600 leading-normal flex items-start justify-between gap-3">
+                                <p>Two-Factor Authentication Active (via Authenticator App)</p>
+                                <button class="text-slate-900 hover:underline font-bold text-[11px] flex-shrink-0">Disable</button>
+                            </div>
+                            <div class="space-y-2 pt-1">
+                                <button class="w-full py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-lg shadow-3xs transition-colors">Change Password</button>
+                                <button class="w-full py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-lg shadow-3xs transition-colors">Session Management</button>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-2xs space-y-4">
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                                <span class="material-icons-outlined text-base">card_membership</span> Subscription
+                            </div>
+                            
+                            <div class="bg-emerald-50 text-emerald-800 border border-emerald-100 rounded-lg px-3 py-2 flex items-center gap-2 text-xs font-semibold shadow-3xs">
+                                <span class="material-icons-outlined text-base">check_circle</span>
+                                Settings saved successfully.
+                            </div>
+
+                            <div class="space-y-2.5 pt-1 text-xs font-semibold text-slate-600">
+                                <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Current Plan</div>
+                                <div class="flex items-center gap-2"><span class="material-icons-outlined text-base text-emerald-500">done</span> Priority Server Access</div>
+                                <div class="flex items-center gap-2"><span class="material-icons-outlined text-base text-emerald-500">done</span> 24/7 Dedicated Legal Support</div>
+                            </div>
+
+                            <div class="space-y-2 pt-2 border-t border-slate-100">
+                                <button class="w-full py-2.5 bg-black hover:bg-slate-800 text-white text-xs font-bold rounded-lg shadow transition-colors">Manage Billing</button>
+                                <button class="w-full py-2 text-rose-600 hover:text-rose-700 text-xs font-bold rounded-lg transition-colors text-center">Cancel Subscription</button>
+                            </div>
+                        </div>
+
+                        <div class="bg-indigo-50 border border-indigo-100/60 rounded-xl p-5 shadow-2xs space-y-3 text-xs leading-normal">
+                            <h4 class="font-bold text-slate-900 text-[13px] tracking-wide">Need Help?</h4>
+                            <p class="text-slate-600 font-medium">Our dedicated support officers are available 24/7 for Enterprise members.</p>
+                            <button class="text-indigo-600 hover:text-indigo-700 font-bold text-[11px] tracking-wide flex items-center gap-1 group pt-1">
+                                Contact My Account Manager 
+                                <span class="material-icons-outlined text-sm transform group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+                            </button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% else %}
+                <div class="h-full flex flex-col items-center justify-center py-20 bg-white border border-dashed border-slate-200 rounded-xl">
+                    <div class="relative flex items-center justify-center mb-4">
+                        <div class="animate-spin rounded-full h-12 w-12 border-2 border-indigo-500/20 border-t-indigo-600"></div>
+                        <span class="material-icons-outlined text-indigo-600 absolute text-sm animate-pulse">hourglass_empty</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-1">Building Layout Space</h3>
+                    <p class="text-sm text-slate-400 font-medium max-w-xs text-center">Navigating to <span class="text-slate-600 font-semibold">{{ page_label }}</span>. Provide the visual mockup reference wireframe to implement this module.</p>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+
+</body>
+</html>
