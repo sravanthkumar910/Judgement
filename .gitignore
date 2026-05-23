@@ -3,14 +3,14 @@ __pycache__/
 *.pyc
 
 # Large artifacts (recommended for GitHub performance)
-*.pth
-*.pkl
-*.index
 *.faiss
 
-# PDFs (many repos exclude these)
-Judgement/legal-similarity/judgments/*.PDF
+# PDFs
+# (kept out of gitignore so PDFs can be pushed)
+# Judgement/legal-similarity/judgments/*.PDF
 
 # (optional) Streamlit cache
 .streamlit/
+
+
 
